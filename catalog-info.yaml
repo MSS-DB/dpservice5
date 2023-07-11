@@ -1,0 +1,31 @@
+# TODO: Edit this component to register more information about your repository with M-DEVx.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  test: ${"name":"dpservice5","destination":{"host":"github.com","owner":"TKH-Maybank-Organization","repo":"dpservice5"}}
+  name: "dpservice5"
+  links:
+    - url: https://githubbeta.maybank.com
+      title: Github Maybank (Beta)
+      icon: dashboard
+  annotations:
+    # TODO: Github CI/CD, Pull Request, Repository Info etc.
+    github.com/project-slug: TKH-Maybank-Organization/dpservice5
+#    github.com/project-slug: MY-MAYBANK/dpservice5
+    # TODO: Add Enterprise sentry project ID
+    sentry.io/project-slug: dpservice5
+#    sentry.io/project-slug: MY-MAYBANK/dpservice5
+    # TODO: Kubernetes: https://backstage.io/docs/features/kubernetes/configuration/
+    backstage.io/kubernetes-id: banking-dev
+    backstage.io/kubernetes-namespace: banking-dev
+    backstage.io/kubernetes-label-selector: 'app=dpservice5,component=banking-dev'
+    backstage.io/techdocs-ref: dir:.
+
+spec:
+  type: service
+  owner: group:developer
+  lifecycle: experimental
+  dependsOn:
+    - resource:default/artists-db
+  providesApis:
+    - spotify

@@ -1,0 +1,52 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Build-Scan-Main-Push-Pull-Request
+# env:
+  # NODE_EXTRA_CA_CERTS: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+  
+
+on:
+ workflow_dispatch:
+ push:
+   branches: 
+   - main
+ pull_request:
+   branches:
+   - main
+
+jobs:
+  build:
+
+    runs-on: RUNNER-LINUX3-134
+
+
+    steps:
+    - shell: bash
+      run: |
+          echo "Cleaning workspace directory..."
+          sudo rm -rfv ${{ github.workspace }}
+          mkdir -p ${{ github.workspace }}
+   
+    - uses: actions/checkout@v2
+    - name: Build with Maven
+      run: mvn -s /data/JBuild-Red-Prod/tools/nexus/.m2/settings.xml clean install --file pom.xml
+          
+  
+    
+  sonarqube:  
+    runs-on: RUNNER-LINUX3-134
+    needs: 
+    - build
+    steps:
+    - name: Sonarqube Scanning
+      run: mvn -s /data/JBuild-Red-Prod/tools/nexus/.m2/settings.xml sonar:sonar -Dsonar.host.url="http://172.31.182.179:9000/" -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=ECLIPSE:BTS-CASA -Dsonar.projectName=ECLIPSE:BTS-CASA -Dsonar.projectVersion=${{ github.run_number }} -Dsonar.sourceEncoding=UTF-8 -Dsonar.java.binaries=. -Dsonar.sonar.skipPackageDesign=true
+  #  - name: SonarQube Quality Gate check
+  #    if: github.event_name == 'push'
+   #   uses: actions/sonarqube-quality-gate-action@v1.0.0
+  #    with:
+   #     scanMetadataReportFile: target/sonar/report-task.txt
+   #   env:
+   #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ORG }}
+   
+  
